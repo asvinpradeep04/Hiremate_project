@@ -447,42 +447,42 @@ export function Interview({
   };
 
   return (
-    <div className="flex min-h-screen flex-col bg-ambient-light">
+    <div className="flex min-h-screen flex-col bg-[#050505] text-[#F5F5F5] relative overflow-hidden">
       {/* ─── Header ─── */}
       <Header
         onLogoClick={() => setShowExitConfirm(true)}
         rightContent={
           <div className="flex items-center gap-3 sm:gap-5">
             {/* Live Timer */}
-            <div className="flex items-center gap-1.5 text-xs font-semibold text-ink-600 bg-white border border-ink-200 px-2.5 py-1 rounded-md shadow-xs">
-              <Clock className="h-3.5 w-3.5 text-ink-400" />
+            <div className="flex items-center gap-1.5 text-xs font-mono font-semibold text-teal-300 bg-[#0E0E0E] border border-white/10 px-3 py-1.5 rounded-xl shadow-xs">
+              <Clock className="h-3.5 w-3.5 text-teal-400" />
               <span>{formatTimer(elapsedSeconds)}</span>
             </div>
 
             {/* Attempt Badge */}
-            <span className="badge bg-primary-100 text-primary-800 font-bold border border-primary-200">
+            <span className="badge bg-teal-500/10 text-teal-300 font-mono text-[10px] font-bold border border-teal-500/30">
               Attempt {attemptNumber}
             </span>
 
             {/* Status indicator */}
-            <div className="hidden sm:flex items-center gap-2 text-xs font-medium text-ink-500">
+            <div className="hidden sm:flex items-center gap-2 text-xs font-mono text-zinc-400">
               <span className="relative flex h-2 w-2">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-500" />
+                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75" />
+                <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-400" />
               </span>
-              <span>Interview in progress</span>
+              <span>Simulation active</span>
             </div>
 
             {/* View Transcript Button */}
             <button
               onClick={() => setIsTranscriptOpen(true)}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-ink-200 bg-white px-3 py-1.5 text-xs font-medium text-ink-700 shadow-sm hover:bg-ink-50 transition-colors cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#121212] px-3.5 py-1.5 text-xs font-mono font-medium text-zinc-300 shadow-sm hover:border-teal-400 hover:text-white transition-all cursor-pointer"
               title="Open full transcript"
             >
-              <MessageSquare className="h-3.5 w-3.5 text-primary-600" />
-              <span className="hidden md:inline">View Transcript</span>
+              <MessageSquare className="h-3.5 w-3.5 text-teal-400" />
+              <span className="hidden md:inline">Transcript</span>
               {messages.length > 0 && (
-                <span className="ml-1 rounded-full bg-primary-50 px-1.5 py-0.2 text-[10px] font-bold text-primary-700">
+                <span className="ml-1 rounded-full bg-teal-500/20 px-1.5 py-0.2 text-[10px] font-bold text-teal-300 border border-teal-500/30">
                   {messages.length}
                 </span>
               )}
@@ -493,35 +493,35 @@ export function Interview({
 
       {/* ─── Competency Progress Bar ─── */}
       <nav
-        className="border-b border-ink-200 bg-white/90 backdrop-blur-xs px-6 py-2.5"
+        className="border-b border-white/[0.06] bg-[#080808]/90 backdrop-blur-md px-6 py-2.5"
         aria-label="Interview Competency Progress"
       >
-        <div className="mx-auto flex max-w-4xl items-center justify-between sm:justify-center gap-4 sm:gap-10">
+        <div className="mx-auto flex max-w-4xl items-center justify-between sm:justify-center gap-3 sm:gap-8 overflow-x-auto no-scrollbar">
           {COMPETENCIES.map((comp, idx) => {
             const isCompleted = idx < currentCompetencyIndex;
             const isCurrent = idx === currentCompetencyIndex;
             return (
               <div
                 key={comp.id}
-                className={`flex items-center gap-2 text-xs font-medium transition-colors ${
+                className={`flex items-center gap-2 text-xs font-mono transition-colors shrink-0 ${
                   isCurrent
-                    ? 'text-primary-700 font-bold'
+                    ? 'text-teal-300 font-bold'
                     : isCompleted
-                    ? 'text-ink-600'
-                    : 'text-ink-400'
+                    ? 'text-zinc-400'
+                    : 'text-zinc-600'
                 }`}
               >
                 <div
-                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[11px] font-bold transition-all ${
+                  className={`flex h-5 w-5 items-center justify-center rounded-full text-[10px] font-bold transition-all ${
                     isCurrent
-                      ? 'border-2 border-primary-600 bg-primary-50 text-primary-700 ring-2 ring-primary-100'
+                      ? 'border-2 border-teal-400 bg-teal-500/20 text-teal-300 shadow-[0_0_10px_#2dd4bf]'
                       : isCompleted
-                      ? 'bg-emerald-100 text-emerald-700'
-                      : 'border border-ink-200 bg-ink-100 text-ink-400'
+                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40'
+                      : 'border border-white/10 bg-white/5 text-zinc-600'
                   }`}
                 >
                   {isCompleted ? (
-                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    <CheckCircle2 className="h-3 w-3 text-emerald-400" />
                   ) : isCurrent ? (
                     '●'
                   ) : (
@@ -538,12 +538,12 @@ export function Interview({
       {/* ─── Error Notification ─── */}
       {(connectionError || micError) && (
         <aside
-          className="border-b border-red-200 bg-red-50 px-6 py-3 text-xs text-red-800 animate-slide-up"
+          className="border-b border-rose-500/30 bg-rose-950/40 px-6 py-3 text-xs text-rose-300 animate-slide-up backdrop-blur-md"
           aria-label="Error Notice"
         >
           <div className="mx-auto flex max-w-3xl items-center justify-between gap-3">
             <div className="flex items-center gap-2">
-              <AlertTriangle className="h-4 w-4 shrink-0 text-red-600" />
+              <AlertTriangle className="h-4 w-4 shrink-0 text-rose-400" />
               <span>{connectionError || micError}</span>
             </div>
             <button
@@ -551,7 +551,7 @@ export function Interview({
                 setConnectionError(null);
                 requestPermission();
               }}
-              className="btn-secondary py-1 px-3 text-xs text-red-700 border-red-300 hover:bg-red-100"
+              className="btn-secondary py-1 px-3 text-xs text-rose-200 border-rose-500/40 hover:bg-rose-900/40"
             >
               Try Again
             </button>
@@ -559,18 +559,18 @@ export function Interview({
         </aside>
       )}
 
-      {/* ─── Main AI Interviewer Area ─── */}
+      {/* ─── Main AI Interviewer Area (Focused Minimal Stage) ─── */}
       <main className="flex-1 flex flex-col items-center justify-center px-6 py-6 sm:py-10">
         <div className="w-full max-w-2xl text-center space-y-6">
           {/* Status Label */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-ink-200 bg-white px-3.5 py-1.5 shadow-xs">
+          <div className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-[#0E0E0E]/90 px-4 py-1.5 shadow-md backdrop-blur-md">
             {phase === 'interviewer_speaking' || isPlaying ? (
               <>
                 <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-primary-600" />
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-teal-400 opacity-75" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-teal-400" />
                 </span>
-                <span className="text-xs font-semibold text-primary-800">
+                <span className="font-mono text-xs font-semibold text-teal-300">
                   Interviewer speaking
                 </span>
               </>
@@ -578,25 +578,25 @@ export function Interview({
               <>
                 <span className="relative flex h-2 w-2">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-600" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
                 </span>
-                <span className="text-xs font-semibold text-emerald-800">
+                <span className="font-mono text-xs font-semibold text-emerald-300">
                   Listening — {formatTimer(speakingSeconds)}
                 </span>
               </>
             ) : phase === 'processing' ? (
               <>
                 <span className="relative flex h-2 w-2">
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-500 animate-spin" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-amber-400 animate-spin" />
                 </span>
-                <span className="text-xs font-semibold text-amber-800">
-                  Analyzing response with Gemini...
+                <span className="font-mono text-xs font-semibold text-amber-300">
+                  Evaluating response with Gemini...
                 </span>
               </>
             ) : (
               <>
-                <span className="h-2 w-2 rounded-full bg-ink-400" />
-                <span className="text-xs font-semibold text-ink-600">
+                <span className="h-2 w-2 rounded-full bg-zinc-600" />
+                <span className="font-mono text-xs font-semibold text-zinc-400">
                   Ready for your answer
                 </span>
               </>
@@ -631,21 +631,21 @@ export function Interview({
 
           {/* Prominent Interviewer Question Text */}
           <div className="min-h-[96px] flex items-center justify-center px-4">
-            <p className="font-serif text-lg sm:text-2xl font-medium leading-relaxed text-ink-900 transition-all">
+            <p className="font-serif text-lg sm:text-2xl font-medium leading-relaxed text-zinc-100 transition-all">
               "{currentQuestionText}"
             </p>
           </div>
 
           {/* Speech Detection Notice / Guidance */}
           {speechNotice && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3 text-xs text-amber-800 flex items-center justify-between gap-3 text-left animate-slide-up">
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-950/30 p-3.5 text-xs text-amber-200 flex items-center justify-between gap-3 text-left animate-slide-up backdrop-blur-md">
               <div className="flex items-center gap-2">
-                <AlertCircle className="h-4 w-4 shrink-0 text-amber-600" />
+                <AlertCircle className="h-4 w-4 shrink-0 text-amber-400" />
                 <span>{speechNotice}</span>
               </div>
               <button
                 onClick={() => setShowTextInput(true)}
-                className="font-bold underline text-amber-900 hover:text-amber-950 shrink-0"
+                className="font-mono text-[11px] font-bold underline text-amber-300 hover:text-amber-100 shrink-0 cursor-pointer"
               >
                 Open Text Box
               </button>
@@ -654,30 +654,31 @@ export function Interview({
 
           {/* Real-time Candidate Speech Preview */}
           {(phase === 'candidate_speaking' || isRecording) && (
-            <div className="rounded-xl border border-emerald-200 bg-emerald-50/70 p-4 animate-fade-in shadow-xs text-left">
-              <div className="flex items-center justify-between mb-1.5">
-                <p className="text-xs font-bold uppercase tracking-wider text-emerald-800">
+            <div className="rounded-2xl border border-emerald-500/30 bg-emerald-950/20 p-4.5 animate-fade-in shadow-lg text-left backdrop-blur-md">
+              <div className="flex items-center justify-between mb-2">
+                <p className="font-mono text-xs font-bold uppercase tracking-wider text-emerald-300 flex items-center gap-2">
+                  <span className="h-2 w-2 rounded-full bg-emerald-400 animate-ping" />
                   Transcribing Your Speech in Real Time...
                 </p>
-                <span className="text-[11px] font-mono font-semibold text-emerald-700">
+                <span className="text-[11px] font-mono font-semibold text-emerald-400">
                   {formatTimer(speakingSeconds)}
                 </span>
               </div>
-              <p className="text-sm text-ink-800 min-h-[36px] bg-white/80 p-3 rounded-lg border border-emerald-100 font-sans leading-relaxed">
-                {candidateText || 'Listening to your microphone. Start speaking your answer...'}
+              <p className="text-sm text-zinc-100 min-h-[40px] bg-black/40 p-3.5 rounded-xl border border-emerald-500/20 font-sans leading-relaxed">
+                {candidateText || 'Listening to microphone. Speak your answer clearly...'}
               </p>
             </div>
           )}
 
           {/* Text Input / Edit Fallback Area */}
           {(showTextInput || (!isRecording && phase === 'idle_listening' && candidateText.length > 0)) && (
-            <div className="rounded-xl border border-primary-200 bg-white p-4 shadow-sm text-left animate-fade-in space-y-3">
+            <div className="rounded-2xl border border-teal-500/40 bg-[#0E0E0E] p-5 shadow-2xl text-left animate-fade-in space-y-3.5 backdrop-blur-xl">
               <div className="flex items-center justify-between">
-                <label className="text-xs font-bold text-ink-800 flex items-center gap-1.5">
-                  <Edit3 className="h-3.5 w-3.5 text-primary-600" />
+                <label className="text-xs font-mono font-bold text-zinc-200 flex items-center gap-2 uppercase tracking-wide">
+                  <Edit3 className="h-3.5 w-3.5 text-teal-400" />
                   Your PM Answer:
                 </label>
-                <span className="text-[11px] text-ink-400">
+                <span className="font-mono text-[11px] text-zinc-500">
                   {candidateText.length} characters
                 </span>
               </div>
@@ -686,19 +687,19 @@ export function Interview({
                 onChange={e => setCandidateText(e.target.value)}
                 placeholder="Type or refine your answer here (e.g. identify user segments, define problem, explore options and trade-offs)..."
                 rows={4}
-                className="w-full rounded-lg border border-ink-200 p-3 text-sm text-ink-900 focus:border-primary-500 focus:outline-none focus:ring-1 focus:ring-primary-500 font-sans"
+                className="w-full rounded-xl border border-white/10 bg-[#050505] p-3 text-sm text-zinc-100 placeholder:text-zinc-600 focus:border-teal-400 focus:outline-none focus:ring-1 focus:ring-teal-400 font-sans leading-relaxed"
               />
-              <div className="flex items-center justify-end gap-2">
+              <div className="flex items-center justify-end gap-2.5">
                 <button
                   onClick={() => setShowTextInput(false)}
-                  className="px-3 py-1.5 text-xs text-ink-500 hover:text-ink-700 font-medium"
+                  className="px-3 py-1.5 text-xs font-mono text-zinc-400 hover:text-zinc-200 cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={() => submitCandidateResponse(candidateText)}
                   disabled={candidateText.trim().length < 5 || phase === 'processing'}
-                  className="btn-primary py-1.5 px-4 text-xs inline-flex items-center gap-1.5 disabled:opacity-40"
+                  className="btn-primary py-2 px-4 text-xs inline-flex items-center gap-1.5 disabled:opacity-40"
                 >
                   <Send className="h-3 w-3" />
                   Submit Answer
@@ -709,7 +710,7 @@ export function Interview({
 
           {/* Processing Indicator */}
           {phase === 'processing' && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50/70 p-4 text-xs font-medium text-amber-900 animate-pulse-soft">
+            <div className="rounded-2xl border border-amber-500/30 bg-amber-950/20 p-4 text-xs font-mono font-medium text-amber-200 animate-pulse-soft">
               Your response has been saved. Gemini is evaluating competencies and extracting evidence...
             </div>
           )}
@@ -717,38 +718,38 @@ export function Interview({
       </main>
 
       {/* ─── Bottom Functional Microphone & Audio Controls ─── */}
-      <footer className="border-t border-ink-200 bg-white shadow-lg px-6 py-5">
+      <footer className="border-t border-white/[0.08] bg-[#0A0A0A]/95 shadow-[0_-4px_30px_rgba(0,0,0,0.8)] px-6 py-4 backdrop-blur-xl">
         <div className="mx-auto flex max-w-3xl flex-col sm:flex-row items-center justify-between gap-4">
           {/* Audio Controls Left: Replay & Volume */}
           <div className="flex items-center gap-2">
             <button
               onClick={handleReplayQuestion}
               disabled={phase === 'candidate_speaking' || phase === 'processing'}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs font-medium text-ink-700 hover:bg-ink-50 disabled:opacity-40 transition-colors shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#121212] px-3.5 py-2 text-xs font-mono font-medium text-zinc-300 hover:border-teal-400 hover:text-white disabled:opacity-30 transition-all cursor-pointer shadow-xs"
               title="Replay interviewer question"
             >
-              <RotateCcw className="h-3.5 w-3.5 text-ink-500" />
-              Replay Question
+              <RotateCcw className="h-3.5 w-3.5 text-teal-400" />
+              Replay
             </button>
 
             {/* Mute / Speaker Toggle */}
             <button
               onClick={toggleMute}
-              className={`rounded-lg border px-3 py-2 text-xs font-medium transition-colors shadow-xs cursor-pointer ${
+              className={`rounded-xl border px-3.5 py-2 text-xs font-mono font-medium transition-all shadow-xs cursor-pointer ${
                 isMuted
-                  ? 'border-amber-300 bg-amber-50 text-amber-800'
-                  : 'border-ink-200 bg-white text-ink-700 hover:bg-ink-50'
+                  ? 'border-amber-500/40 bg-amber-950/40 text-amber-300'
+                  : 'border-white/10 bg-[#121212] text-zinc-300 hover:border-teal-400 hover:text-white'
               }`}
               title={isMuted ? 'Unmute AI speaker' : 'Mute AI speaker'}
             >
               {isMuted ? (
                 <div className="flex items-center gap-1.5">
-                  <VolumeX className="h-3.5 w-3.5 text-amber-600" />
+                  <VolumeX className="h-3.5 w-3.5 text-amber-400" />
                   Muted
                 </div>
               ) : (
                 <div className="flex items-center gap-1.5">
-                  <Volume2 className="h-3.5 w-3.5 text-primary-600" />
+                  <Volume2 className="h-3.5 w-3.5 text-teal-400" />
                   Audio On
                 </div>
               )}
@@ -758,11 +759,11 @@ export function Interview({
             <button
               onClick={() => setShowTextInput(prev => !prev)}
               disabled={phase === 'processing'}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-ink-200 bg-white px-3 py-2 text-xs font-medium text-ink-700 hover:bg-ink-50 transition-colors shadow-xs cursor-pointer"
+              className="inline-flex items-center gap-1.5 rounded-xl border border-white/10 bg-[#121212] px-3.5 py-2 text-xs font-mono font-medium text-zinc-300 hover:border-teal-400 hover:text-white transition-all shadow-xs cursor-pointer"
               title="Type or edit your response manually"
             >
-              <Edit3 className="h-3.5 w-3.5 text-primary-600" />
-              {showTextInput ? 'Hide Text Input' : 'Type Answer'}
+              <Edit3 className="h-3.5 w-3.5 text-teal-400" />
+              {showTextInput ? 'Hide Text' : 'Type Answer'}
             </button>
           </div>
 
@@ -771,14 +772,14 @@ export function Interview({
             {phase === 'candidate_speaking' || isRecording ? (
               <button
                 onClick={handleFinishSpeaking}
-                className="group inline-flex items-center gap-3 rounded-full bg-red-600 hover:bg-red-700 text-white px-7 py-3.5 text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95 cursor-pointer"
+                className="group inline-flex items-center gap-3 rounded-full bg-rose-600 hover:bg-rose-500 text-white px-7 py-3.5 text-sm font-bold shadow-[0_0_30px_rgba(244,63,94,0.6)] transition-all active:scale-95 cursor-pointer"
               >
                 <span className="relative flex h-3 w-3">
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-white opacity-75" />
                   <span className="relative inline-flex h-3 w-3 rounded-full bg-white" />
                 </span>
                 Finish Answer
-                <span className="rounded bg-red-800/80 px-2 py-0.5 text-xs font-mono">
+                <span className="rounded bg-rose-950/80 px-2 py-0.5 text-xs font-mono">
                   {formatTimer(speakingSeconds)}
                 </span>
               </button>
@@ -786,7 +787,7 @@ export function Interview({
               <button
                 onClick={handleStartSpeaking}
                 disabled={phase === 'processing'}
-                className="group inline-flex items-center gap-3 rounded-full bg-primary-600 hover:bg-primary-700 text-white px-8 py-3.5 text-sm font-bold shadow-md hover:shadow-lg transition-all active:scale-95 disabled:opacity-50 cursor-pointer"
+                className="btn-primary group inline-flex items-center gap-3 rounded-full px-8 py-3.5 text-sm font-bold shadow-[0_0_30px_rgba(45,212,191,0.6)] cursor-pointer"
               >
                 <Mic className="h-5 w-5 group-hover:scale-110 transition-transform" />
                 Start Answer
@@ -798,7 +799,7 @@ export function Interview({
           <div className="flex items-center gap-2">
             <button
               onClick={() => setShowExitConfirm(true)}
-              className="text-xs text-ink-500 hover:text-red-600 transition-colors font-medium px-2 py-1 cursor-pointer"
+              className="text-xs font-mono text-zinc-500 hover:text-rose-400 transition-colors font-medium px-2 py-1 cursor-pointer"
             >
               End Interview
             </button>
@@ -815,10 +816,10 @@ export function Interview({
 
       {/* ─── Exit Confirmation Modal ─── */}
       {showExitConfirm && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-ink-900/60 backdrop-blur-xs p-4 animate-fade-in">
-          <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl border border-ink-200">
-            <h3 className="text-base font-bold text-ink-900">End this interview?</h3>
-            <p className="mt-2 text-xs leading-relaxed text-ink-500">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4 animate-fade-in">
+          <div className="w-full max-w-sm rounded-3xl bg-[#0E0E0E] p-6 shadow-2xl border border-white/10">
+            <h3 className="text-base font-bold text-white">End this interview?</h3>
+            <p className="mt-2 text-xs leading-relaxed text-zinc-400">
               Ending now will generate a debrief evaluation based on the responses recorded so far.
             </p>
             <div className="mt-6 flex justify-end gap-3">
@@ -830,7 +831,7 @@ export function Interview({
               </button>
               <button
                 onClick={handleEndEarly}
-                className="rounded-lg bg-red-600 px-4 py-2 text-xs font-semibold text-white hover:bg-red-700 transition-colors cursor-pointer"
+                className="rounded-xl bg-rose-600 hover:bg-rose-500 px-4 py-2 text-xs font-semibold text-white transition-colors cursor-pointer shadow-[0_0_15px_rgba(244,63,94,0.4)]"
               >
                 End & Evaluate
               </button>

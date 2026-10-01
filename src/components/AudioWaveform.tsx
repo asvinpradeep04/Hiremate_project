@@ -12,7 +12,7 @@ export function AudioWaveform({
   state,
   frequencies = [],
   height = 56,
-  barCount = 28,
+  barCount = 32,
   className = '',
 }: AudioWaveformProps) {
   const [sinePhase, setSinePhase] = useState(0);
@@ -33,7 +33,7 @@ export function AudioWaveform({
       if (frequencies.length > 0) {
         const freqIdx = Math.floor((i / barCount) * frequencies.length);
         const val = frequencies[freqIdx] || 0.08;
-        return Math.max(0.12, Math.min(1.0, val * 1.4));
+        return Math.max(0.12, Math.min(1.0, val * 1.5));
       }
       return 0.15;
     }
@@ -58,17 +58,17 @@ export function AudioWaveform({
     return 0.12 + (Math.sin(i * 0.5) + 1) * 0.05;
   });
 
-  const getBarColor = (index: number) => {
+  const getBarColor = () => {
     if (state === 'playing') {
-      return 'bg-gradient-to-t from-primary-600 to-primary-400';
+      return 'bg-gradient-to-t from-teal-600 via-teal-400 to-cyan-300 shadow-[0_0_10px_rgba(45,212,191,0.6)]';
     }
     if (state === 'speaking') {
-      return 'bg-gradient-to-t from-emerald-600 to-teal-400';
+      return 'bg-gradient-to-t from-emerald-600 via-emerald-400 to-teal-300 shadow-[0_0_10px_rgba(52,211,153,0.6)]';
     }
     if (state === 'processing') {
-      return 'bg-gradient-to-t from-accent-600 to-amber-400';
+      return 'bg-gradient-to-t from-amber-600 via-amber-400 to-teal-400 shadow-[0_0_8px_rgba(251,191,36,0.5)]';
     }
-    return 'bg-ink-300';
+    return 'bg-zinc-700/60';
   };
 
   return (
@@ -82,10 +82,10 @@ export function AudioWaveform({
         return (
           <div
             key={i}
-            className={`w-1 sm:w-1.5 rounded-full transition-all duration-75 ${getBarColor(i)}`}
+            className={`w-1 sm:w-1.5 rounded-full transition-all duration-75 ${getBarColor()}`}
             style={{
               height: `${barHeightPx}px`,
-              opacity: state === 'idle' ? 0.35 : 0.9,
+              opacity: state === 'idle' ? 0.3 : 0.95,
             }}
           />
         );

@@ -4,44 +4,52 @@
 
 @layer base {
   :root {
-    --bg-base: #fbfbf9;
+    --bg-base: #050505;
+    color-scheme: dark;
   }
 
   body {
-    background-color: #fcfbf9;
-    color: #1e293b;
+    background-color: #050505;
+    color: #F5F5F5;
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+  }
+
+  /* Selection styling */
+  ::selection {
+    background: rgba(20, 184, 166, 0.3);
+    color: #5eead4;
   }
 }
 
 @layer components {
-  /* Premium CTA Button */
+  /* Premium CTA Button - Dark with luminous teal */
   .btn-primary {
-    @apply relative inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-primary-600 to-primary-700 px-7 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-primary-500 hover:to-primary-600 hover:shadow-lg hover:shadow-primary-500/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
+    @apply relative inline-flex items-center justify-center gap-2.5 rounded-xl bg-gradient-to-r from-teal-500 via-teal-400 to-cyan-400 px-7 py-3.5 text-sm font-semibold text-black shadow-[0_0_20px_-3px_rgba(45,212,191,0.5)] transition-all duration-300 hover:shadow-[0_0_35px_rgba(45,212,191,0.7)] hover:scale-[1.02] active:scale-[0.98] disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:scale-100 disabled:hover:shadow-none cursor-pointer;
   }
 
-  /* Secondary Glass Button */
+  /* Secondary Glass Button - Refined dark surface */
   .btn-secondary {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-ink-200/80 bg-white/90 px-6 py-3 text-sm font-semibold text-ink-700 shadow-xs backdrop-blur-xs transition-all duration-200 hover:border-ink-300 hover:bg-white hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-50;
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-white/10 bg-[#121212]/90 px-6 py-3 text-sm font-semibold text-[#E4E4E7] shadow-sm backdrop-blur-md transition-all duration-200 hover:border-teal-500/40 hover:bg-[#181818] hover:text-white hover:shadow-[0_0_15px_rgba(20,184,166,0.15)] active:scale-[0.98] disabled:opacity-40 cursor-pointer;
   }
 
   .btn-ghost {
-    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-ink-100/70 hover:text-ink-900;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium text-zinc-400 transition-colors hover:bg-white/5 hover:text-zinc-100 cursor-pointer;
   }
 
-  /* Modern Glass / Card Surfaces */
+  /* Modern Dark Glass / Card Surfaces */
   .card {
-    @apply rounded-2xl border border-ink-200/70 bg-white/90 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] backdrop-blur-xs transition-all duration-200;
+    @apply rounded-2xl border border-white/[0.07] bg-[#0A0A0A]/90 shadow-[0_4px_24px_rgba(0,0,0,0.5)] backdrop-blur-md transition-all duration-200;
   }
 
   .card-premium {
-    @apply rounded-2xl border border-ink-200/60 bg-gradient-to-b from-white to-ink-50/50 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] transition-all duration-200;
+    @apply rounded-2xl border border-white/[0.09] bg-gradient-to-b from-[#111111] to-[#0A0A0A] shadow-[0_8px_32px_rgba(0,0,0,0.6)] transition-all duration-200;
   }
 
   .card-hover {
-    @apply transition-all duration-200 hover:-translate-y-1 hover:border-primary-300/80 hover:shadow-[0_8px_30px_-6px_rgba(20,184,166,0.12)];
+    @apply transition-all duration-200 hover:-translate-y-0.5 hover:border-teal-500/40 hover:shadow-[0_8px_30px_-6px_rgba(20,184,166,0.25)];
   }
 
   .badge {
@@ -49,32 +57,50 @@
   }
 
   .section-label {
-    @apply text-[11px] font-bold uppercase tracking-widest text-primary-700;
+    @apply text-[11px] font-mono font-semibold uppercase tracking-widest text-teal-400/90 flex items-center gap-2;
   }
 }
 
-/* Subtle Ambient Gradient Backgrounds */
-.bg-ambient-light {
+/* Ambient Dark Background with Technical Grid */
+.bg-ambient-dark {
+  background-color: #050505;
   background-image: 
-    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.08) 0%, transparent 45%),
-    radial-gradient(circle at 10% 30%, rgba(245, 158, 11, 0.04) 0%, transparent 35%),
-    radial-gradient(circle at 90% 70%, rgba(20, 184, 166, 0.05) 0%, transparent 40%);
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.12) 0%, transparent 55%),
+    radial-gradient(circle at 10% 30%, rgba(34, 211, 238, 0.05) 0%, transparent 40%),
+    radial-gradient(circle at 90% 70%, rgba(20, 184, 166, 0.06) 0%, transparent 45%);
 }
 
-.bg-dot-pattern {
-  background-image: radial-gradient(rgba(100, 116, 139, 0.12) 1px, transparent 1px);
-  background-size: 24px 24px;
+.bg-ambient-light {
+  /* Legacy alias retained for components, styled with dark ambient */
+  background-color: #050505;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.12) 0%, transparent 55%),
+    radial-gradient(circle at 15% 40%, rgba(34, 211, 238, 0.04) 0%, transparent 40%),
+    radial-gradient(circle at 85% 65%, rgba(20, 184, 166, 0.06) 0%, transparent 45%);
+}
+
+/* Subtle Technical Grid */
+.bg-tech-grid {
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Subtle Grain / Noise Overlay */
+.bg-noise {
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.035'/%3E%3C/svg%3E");
 }
 
 /* Float animations */
 @keyframes floatSlow {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-8px); }
+  50% { transform: translateY(-7px); }
 }
 
 @keyframes floatReverse {
   0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(6px); }
+  50% { transform: translateY(7px); }
 }
 
 .animate-float-slow {
@@ -85,23 +111,43 @@
   animation: floatReverse 7s ease-in-out infinite;
 }
 
-/* Custom subtle scrollbar */
+/* Custom subtle dark scrollbar */
 ::-webkit-scrollbar {
   width: 6px;
   height: 6px;
 }
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: #050505;
 }
 ::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
+  background: #27272a;
   border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+  background: #3f3f46;
 }
 
 /* Editorial quote styling */
 .editorial-quote {
   font-family: 'Lora', Georgia, serif;
+}
+
+/* Hide scrollbar utility */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Accessibility: respect prefers-reduced-motion */
+@media (prefers-reduced-motion: reduce) {
+  *, ::before, ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }

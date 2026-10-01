@@ -158,17 +158,17 @@ export const RATING_LABELS: Record<Rating, string> = {
 };
 
 export const RATING_COLORS: Record<Rating, string> = {
-  1: 'bg-red-100 text-red-700 border-red-200',
-  2: 'bg-accent-100 text-accent-700 border-accent-200',
-  3: 'bg-primary-100 text-primary-700 border-primary-200',
-  4: 'bg-green-100 text-green-700 border-green-200',
+  1: 'bg-rose-500/10 text-rose-300 border-rose-500/30',
+  2: 'bg-amber-500/10 text-amber-300 border-amber-500/30',
+  3: 'bg-teal-500/15 text-teal-300 border-teal-500/30',
+  4: 'bg-emerald-500/15 text-emerald-300 border-emerald-500/30',
 };
 
 export const RATING_BAR_COLORS: Record<Rating, string> = {
-  1: 'bg-red-400',
-  2: 'bg-accent-400',
-  3: 'bg-primary-500',
-  4: 'bg-green-500',
+  1: 'bg-rose-500/80 shadow-[0_0_8px_rgba(244,63,94,0.4)]',
+  2: 'bg-amber-400/85 shadow-[0_0_8px_rgba(251,191,36,0.4)]',
+  3: 'bg-teal-400 shadow-[0_0_8px_rgba(45,212,191,0.5)]',
+  4: 'bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,0.5)]',
 };
 
 export function getCompetency(id: CompetencyId): Competency {

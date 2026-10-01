@@ -6,6 +6,8 @@ import { Debrief } from '@/screens/Debrief';
 import { Practice } from '@/screens/Practice';
 import { Comparison } from '@/screens/Comparison';
 import { SetupBanner } from '@/components/SetupBanner';
+import { CustomCursor } from '@/components/CustomCursor';
+import { BackgroundEffects } from '@/components/BackgroundEffects';
 import { getCaseForDomain } from '@/data/cases';
 import { compareAttempts } from '@/data/simulation';
 import { resetCounters } from '@/data/simulation';
@@ -65,6 +67,18 @@ export function App() {
     } catch {}
     return null;
   });
+
+  // Screen Transition State
+  const [isPageTransitioning, setIsPageTransitioning] = useState(false);
+
+  // Trigger page transition whenever screen changes
+  useEffect(() => {
+    setIsPageTransitioning(true);
+    const timeout = setTimeout(() => {
+      setIsPageTransitioning(false);
+    }, 450);
+    return () => clearTimeout(timeout);
+  }, [screen]);
 
   // Persist session state to survive browser refreshes (Section 9 & 33)
   useEffect(() => {
@@ -169,11 +183,27 @@ export function App() {
   };
 
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[#050505] text-[#F5F5F5] relative overflow-x-hidden">
+      {/* Global Background Effects: Multi-layer Parallax & Grid */}
+      <BackgroundEffects />
+
+      {/* Desktop Custom Cursor */}
+      <CustomCursor />
+
+      {/* Global Screen Page Transition Effect (Black fade + traveling teal laser line) */}
+      <div
+        className={`pointer-events-none fixed inset-0 z-[9990] transition-opacity duration-300 ${
+          isPageTransitioning ? 'opacity-100' : 'opacity-0'
+        }`}
+      >
+        <div className="absolute inset-0 bg-[#050505]/60 backdrop-blur-xs" />
+        <div className="absolute top-0 left-0 right-0 h-[2px] bg-gradient-to-r from-transparent via-teal-400 to-transparent shadow-[0_0_15px_#2dd4bf] animate-laser-scan" />
+      </div>
+
       {/* Top Banner showing AI Gateway configuration and live status */}
       <SetupBanner />
 
-      <div className="flex-1">
+      <div className="flex-1 transition-all duration-300">
         {(() => {
           switch (screen) {
             case 'landing':
