@@ -1,0 +1,107 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --bg-base: #fbfbf9;
+  }
+
+  body {
+    background-color: #fcfbf9;
+    color: #1e293b;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+}
+
+@layer components {
+  /* Premium CTA Button */
+  .btn-primary {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-b from-primary-600 to-primary-700 px-7 py-3.5 text-sm font-semibold text-white shadow-sm transition-all duration-200 hover:from-primary-500 hover:to-primary-600 hover:shadow-lg hover:shadow-primary-500/20 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:translate-y-0;
+  }
+
+  /* Secondary Glass Button */
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl border border-ink-200/80 bg-white/90 px-6 py-3 text-sm font-semibold text-ink-700 shadow-xs backdrop-blur-xs transition-all duration-200 hover:border-ink-300 hover:bg-white hover:shadow-sm hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg px-3.5 py-2 text-sm font-medium text-ink-600 transition-colors hover:bg-ink-100/70 hover:text-ink-900;
+  }
+
+  /* Modern Glass / Card Surfaces */
+  .card {
+    @apply rounded-2xl border border-ink-200/70 bg-white/90 shadow-[0_2px_8px_-2px_rgba(15,23,42,0.04)] backdrop-blur-xs transition-all duration-200;
+  }
+
+  .card-premium {
+    @apply rounded-2xl border border-ink-200/60 bg-gradient-to-b from-white to-ink-50/50 shadow-[0_4px_20px_-4px_rgba(15,23,42,0.06)] transition-all duration-200;
+  }
+
+  .card-hover {
+    @apply transition-all duration-200 hover:-translate-y-1 hover:border-primary-300/80 hover:shadow-[0_8px_30px_-6px_rgba(20,184,166,0.12)];
+  }
+
+  .badge {
+    @apply inline-flex items-center gap-1.5 rounded-full px-2.5 py-0.5 text-xs font-semibold tracking-wide;
+  }
+
+  .section-label {
+    @apply text-[11px] font-bold uppercase tracking-widest text-primary-700;
+  }
+}
+
+/* Subtle Ambient Gradient Backgrounds */
+.bg-ambient-light {
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(20, 184, 166, 0.08) 0%, transparent 45%),
+    radial-gradient(circle at 10% 30%, rgba(245, 158, 11, 0.04) 0%, transparent 35%),
+    radial-gradient(circle at 90% 70%, rgba(20, 184, 166, 0.05) 0%, transparent 40%);
+}
+
+.bg-dot-pattern {
+  background-image: radial-gradient(rgba(100, 116, 139, 0.12) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+
+/* Float animations */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes floatReverse {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(6px); }
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.animate-float-reverse {
+  animation: floatReverse 7s ease-in-out infinite;
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #94a3b8;
+}
+
+/* Editorial quote styling */
+.editorial-quote {
+  font-family: 'Lora', Georgia, serif;
+}
