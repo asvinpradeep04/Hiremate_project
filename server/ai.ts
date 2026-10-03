@@ -4,18 +4,28 @@ import { config } from './config';
 
 // Rubric context for system prompts
 export const RUBRIC_CONTEXT = `
-You are evaluating a Product Sense interview for an early-career Product Manager candidate.
-The interview evaluates four competencies:
-1. problem_framing: Defines problem before solution, identifies desired outcome, establishes constraints.
-2. user_understanding: Identifies specific user segment, explains needs/pain points, connects problem to user behavior.
-3. prioritization_tradeoffs: Compares options, explains prioritization logic, acknowledges constraints and trade-offs.
-4. metrics_measurement: Defines success, selects relevant metrics (North Star, primary, secondary), connects metrics to proposed outcome.
+You are an expert Principal PM Interviewer evaluating a candidate across Core PM and AI PM interview frameworks:
+
+CORE PM COMPETENCIES & FRAMEWORKS:
+1. problem_framing: CIRCLES method, 5W1H, defines problem and root friction before solution, sets constraints.
+2. user_understanding: Segmenting users, JTBD (Jobs-to-be-Done), acute pain points, motivations, behavioral drop-offs.
+3. prioritization_tradeoffs: RICE method, MoSCoW, comparing options, cost of delay, explicit trade-off rationale.
+4. metrics_measurement: GAME framework (Goals, Actions, Metrics, Evaluations), North Star, primary drivers, ecosystem guardrails.
+5. product_strategy: Porter's 5 Forces, 3 Horizons, defensible moats (network effects, switching costs, scale), flywheels.
+6. guesstimates: Fermi breakdown, top-down demographic segmentation, bottom-up demand/supply, sanity checking.
+7. execution_prioritization: Triaging production crises, launch blockers, engineering vs design trade-offs, rollback gates.
+
+AI PM COMPETENCIES & FRAMEWORKS:
+8. ai_product_sense: Probabilistic UX, confidence-tier routing, human-in-the-loop (HITL), hallucination containment, trust calibration.
+9. technical_architecture: RAG vs Fine-tuning decision matrix, latency budgets (TTFT), context windows, chunking, vector indexing.
+10. evaluation_systems: Multi-tier eval pyramids (heuristics, LLM-as-a-judge, golden benchmarks), RAG Triad, CI/CD regression gates.
+11. ai_behavioral_ethics: Responsible AI, algorithmic bias audits, PII protection, alignment/sycophancy mitigation, safety escalation.
 
 RATINGS (Simulation Performance):
-1 = Emerging (demonstrates significant gaps, jumps to premature solutions without structure)
-2 = Developing (demonstrates partial structure, needs prompting for trade-offs/users)
-3 = Solid (demonstrates clear structured thinking, defines users and problems before solutions)
-4 = Strong (demonstrates comprehensive, nuanced reasoning with crisp prioritization and metrics)
+1 = Emerging (demonstrates significant gaps, jumps to premature solutions without structure, ignores failure modes)
+2 = Developing (demonstrates partial structure, needs prompting for trade-offs/users/latency/guardrails)
+3 = Solid (demonstrates clear structured thinking, defines users/problems/architecture before solutions, cites metrics/evals)
+4 = Strong (demonstrates comprehensive, nuanced reasoning with crisp prioritization, rigorous frameworks, and executive clarity)
 `;
 
 export const INTERVIEWER_SYSTEM_PROMPT = `
@@ -162,29 +172,54 @@ export async function generateCustomCasePrompt(data: {
   jobDescription?: string;
   domain?: string;
   experienceLevel?: string;
-}): Promise<{ id: string; title: string; prompt: string; domain: string }> {
+  track?: string;
+  questionType?: string;
+  targetFrameworks?: string[];
+}): Promise<{ id: string; title: string; prompt: string; domain: string; competencies: string[] }> {
   const company = data.companyName?.trim() || 'Tech Enterprise';
   const role = data.targetRole?.trim() || 'Product Manager';
   const services = data.companyServices?.trim() || data.domain || 'Digital Platform';
   const jd = data.jobDescription?.trim() || '';
+  const track = data.track || (role.toLowerCase().includes('ai') || role.toLowerCase().includes('ml') ? 'ai_pm' : 'core_pm');
+  const questionType = data.questionType || (track === 'ai_pm' ? 'ai_product_sense' : 'product_sense');
+
+  // Default competencies based on track / questionType
+  const defaultCompetencies = track === 'ai_pm'
+    ? ['ai_product_sense', 'technical_architecture', 'evaluation_systems', 'ai_behavioral_ethics']
+    : ['problem_framing', 'user_understanding', 'prioritization_tradeoffs', 'metrics_measurement'];
 
   if (config.isConfigured) {
     try {
       const prompt = `
-You are a Principal Product Manager conducting an authentic Product Sense interview for ${company}.
+You are a Principal Product Manager conducting an authentic, rigorous PM interview for ${company}.
 Target Position: ${role}
+Interview Track: ${track === 'ai_pm' ? 'AI / ML Product Manager' : 'Core Product Manager'}
+Focus Question Type: ${questionType}
 Company Focus & Core Services: ${services}
 Candidate Experience Level: ${data.experienceLevel || '1-2 years'}
 Job Description / Key Requirements:
 ${jd || 'Standard high-impact PM role'}
 
-Generate an authentic, challenging Product Sense business case prompt tailored specifically to ${company} and this role.
-The case should present a specific realistic business challenge (e.g., metric drop, user onboarding friction, new feature expansion, conversion bottleneck, or trade-off decision).
+Generate an authentic, challenging business case prompt tailored specifically to ${company}, this target role, and the chosen focus.
+If this is an AI PM track or role, test:
+- AI Product Sense & Guardrails (probabilistic UX, confidence tiers, human-in-the-loop, hallucinations)
+- Technical & Architecture Depth (RAG vs fine-tuning, vector search, latency budgets, token economics)
+- Evaluation Systems (multi-tier evals, LLM-as-a-judge, RAG triad, golden sets, regression gates)
+- AI Ethics & Safety (algorithmic bias, PII protection, alignment, safety boundaries)
+
+If this is a Core PM track, test:
+- Product Sense / Design (CIRCLES, user personas, acute friction, creative solutions)
+- Analytical & Metrics (GAME framework, North Star, guardrail counter-metrics, metric triage)
+- Product Strategy (moats, 3-horizons, defensibility, flywheels)
+- Guesstimates (Fermi breakdown, market sizing, formula, sanity checks)
+- Execution & Prioritization (RICE scoring, launch blockers, rollback criteria)
+
 Return JSON strictly matching:
 {
   "title": "Short punchy case title",
-  "prompt": "You are a ${role} at ${company} (${services}). [State realistic context, metrics, and problem]. Walk me through how you would approach this.",
-  "domain": "${data.domain || 'general'}"
+  "prompt": "You are a ${role} at ${company} (${services}). [State realistic business/technical scenario, context, metrics, and problem]. Walk me through how you would approach this.",
+  "domain": "${data.domain || 'general'}",
+  "competencies": ["competency_id_1", "competency_id_2", "competency_id_3", "competency_id_4"]
 }
 Return ONLY valid JSON.
 `;
@@ -198,6 +233,7 @@ Return ONLY valid JSON.
           title: parsed.title,
           prompt: parsed.prompt,
           domain: data.domain || 'general',
+          competencies: Array.isArray(parsed.competencies) && parsed.competencies.length > 0 ? parsed.competencies : defaultCompetencies,
         };
       }
     } catch (e) {
@@ -205,11 +241,15 @@ Return ONLY valid JSON.
     }
   }
 
+  const isAI = track === 'ai_pm';
   return {
     id: `custom_${Date.now()}`,
-    title: `${company} — ${role} Product Sense Case`,
-    prompt: `You are a ${role} at ${company}, which provides ${services}. Over the past quarter, the team noticed a 35% drop in primary conversion during user onboarding. The leadership team has tasked you with identifying the root cause and designing a product initiative to solve this. Walk me through how you would approach this.`,
-    domain: data.domain || 'general',
+    title: isAI ? `${company} — ${role} AI Product & Architecture Case` : `${company} — ${role} Product Sense Case`,
+    prompt: isAI
+      ? `You are an ${role} at ${company}, which provides ${services}. The company is launching a core generative AI assistant into the product workflow. Users expect high accuracy and low latency, but early prototypes suffer from occasional hallucinations and a 2.5s response delay. Walk me through your probabilistic UX design, architecture trade-offs (RAG vs fine-tuning), evaluation pipeline, and safety guardrails.`
+      : `You are a ${role} at ${company}, which provides ${services}. Over the past quarter, the team noticed a 35% drop in primary conversion during user onboarding. The leadership team has tasked you with identifying the root cause and designing a product initiative to solve this. Walk me through how you would approach this.`,
+    domain: data.domain || (isAI ? 'ai_tech' : 'general'),
+    competencies: defaultCompetencies,
   };
 }
 
@@ -794,6 +834,34 @@ function fallbackFollowUp(competencyId: string, missingEvidence: string[], follo
       'What is your primary North Star metric here, and what counter-metrics would you monitor to avoid unintended consequences?',
       'What leading indicator would give you confidence within the first 7 days that the trial conversion will improve?',
     ],
+    product_strategy: [
+      'How does this initiative build a durable competitive moat against established incumbents, and what stops competitors from simply copying it?',
+      'How does this investment fit into your 3-horizon product roadmap and platform flywheel?',
+    ],
+    guesstimates: [
+      'What is your step-by-step formula before calculating, and what are your baseline population and adoption assumptions?',
+      'How would you sanity check your final number against known industry benchmarks?',
+    ],
+    execution_prioritization: [
+      'Walk me through the exact criteria you would use to sequence these roadmap items under strict bandwidth constraints. What gets cut first?',
+      'If post-launch telemetry shows an unexpected regression, what are your explicit go/no-go rollback thresholds?',
+    ],
+    ai_product_sense: [
+      'Because AI models are probabilistic, how does your UX handle hallucinations or low-confidence outputs without eroding user trust?',
+      'If model generation latency spikes to 3-4 seconds, what interface feedback and steerability controls do you give the user in real-time?',
+    ],
+    technical_architecture: [
+      'What technical criteria lead you to choose RAG over Fine-Tuning here, and how would you approach semantic chunking and vector retrieval?',
+      'How would you deconstruct your end-to-end latency budget (TTFT vs tokens/sec) and manage inference compute costs at scale?',
+    ],
+    evaluation_systems: [
+      'How would you structure your automated evaluation stack (deterministic checks, LLM-as-a-judge, and human golden test sets) to catch regressions before deployment?',
+      'How would you curate your golden benchmark set and calibrate your judge model to ensure its scores align with expert human expectations?',
+    ],
+    ai_behavioral_ethics: [
+      'What proactive audit protocols would you implement to detect demographic bias, and how do you guarantee sensitive customer PII is never exposed?',
+      'How do you prevent sycophantic model outputs and handle high-stakes safety breaches or jailbreaks?',
+    ],
   };
 
   const list = followUps[competencyId] || followUps.problem_framing;
@@ -803,7 +871,7 @@ function fallbackFollowUp(competencyId: string, missingEvidence: string[], follo
     question,
     target_competency: competencyId,
     missing_evidence: missingEvidence,
-    purpose: `Gather evidence for ${competencyId}`,
+    purpose: `Gather evidence for ${competencyId.replace(/_/g, ' ')}`,
     stop_condition: 'Candidate articulates structured justification',
   };
 }
@@ -813,7 +881,15 @@ function fallbackEvaluation(
   responses: Array<{ competencyId: string; text: string }>,
   evidence: Array<{ competency: string; sourceText: string; observedBehavior: string; impact: string }>
 ) {
-  const compIds = ['problem_framing', 'user_understanding', 'prioritization_tradeoffs', 'metrics_measurement'];
+  // Dynamically evaluate competencies present in responses or evidence, or fallback to defaults
+  const usedCompIds = Array.from(new Set([
+    ...responses.map(r => r.competencyId),
+    ...evidence.map(e => e.competency),
+  ])).filter(Boolean);
+
+  const compIds = usedCompIds.length > 0
+    ? usedCompIds
+    : ['problem_framing', 'user_understanding', 'prioritization_tradeoffs', 'metrics_measurement'];
 
   const assessments = compIds.map(id => {
     const compEv = evidence.filter(e => e.competency === id);
@@ -824,7 +900,7 @@ function fallbackEvaluation(
       rating,
       evidence_coverage: Math.min(1, compEv.length * 0.4 + 0.2),
       confidence: 0.85,
-      recommendation: `Focus on structuring your response for ${id.replace('_', ' ')}.`,
+      recommendation: `Focus on structuring your response for ${id.replace(/_/g, ' ')}.`,
     };
   });
 

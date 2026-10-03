@@ -8,7 +8,7 @@ import { Comparison } from '@/screens/Comparison';
 import { SetupBanner } from '@/components/SetupBanner';
 import { CustomCursor } from '@/components/CustomCursor';
 import { BackgroundEffects } from '@/components/BackgroundEffects';
-import { getCaseForDomain } from '@/data/cases';
+import { getCaseForDomain, getCaseForTrackAndType } from '@/data/cases';
 import { compareAttempts } from '@/data/simulation';
 import { resetCounters } from '@/data/simulation';
 import type { Attempt, AttemptComparison, SetupData } from '@/types';
@@ -219,7 +219,7 @@ export function App() {
                 return (
                   <Interview
                     setup={fallbackSetup}
-                    casePrompt={getCaseForDomain('saas', 1)}
+                    casePrompt={getCaseForTrackAndType('saas', 1)}
                     attemptNumber={1}
                     onComplete={handleInterview1Complete}
                     onExit={handleExit}
@@ -229,7 +229,7 @@ export function App() {
               return (
                 <Interview
                   setup={setupData}
-                  casePrompt={getCaseForDomain(setupData.domain, 1)}
+                  casePrompt={getCaseForTrackAndType(setupData.domain, 1, setupData.track, setupData.questionType)}
                   attemptNumber={1}
                   onComplete={handleInterview1Complete}
                   onExit={handleExit}
@@ -257,12 +257,12 @@ export function App() {
               );
 
             case 'interview2':
-              const domainForAttempt2 = setupData?.domain || attempt1?.caseId?.split('_')[0] as any || 'saas';
+              const domainForAttempt2 = setupData?.domain || (attempt1?.caseId?.split('_')[0] as any) || 'saas';
               const currentSetup = setupData || { domain: domainForAttempt2, experienceLevel: '0-1' };
               return (
                 <Interview
                   setup={currentSetup}
-                  casePrompt={getCaseForDomain(domainForAttempt2, 2)}
+                  casePrompt={getCaseForTrackAndType(domainForAttempt2, 2, currentSetup.track, currentSetup.questionType)}
                   attemptNumber={2}
                   onComplete={handleInterview2Complete}
                   onExit={handleExit}

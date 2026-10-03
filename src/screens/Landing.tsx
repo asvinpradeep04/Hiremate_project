@@ -20,11 +20,18 @@ import {
   Compass,
   Target,
   Sliders,
+  Calculator,
+  Cpu,
+  CheckSquare,
+  FileText,
+  Building2,
 } from 'lucide-react';
 import { Header } from '@/components/Header';
 import { AudioWaveform } from '@/components/AudioWaveform';
 import { AICoreSphere } from '@/components/AICoreSphere';
 import { NeuralReasoningMap } from '@/components/NeuralReasoningMap';
+import { QUESTION_TYPES_CATALOG } from '@/data/rubric';
+import type { QuestionTypeDefinition } from '@/types';
 
 interface LandingProps {
   onStart: () => void;
@@ -156,6 +163,8 @@ export function Landing({ onStart }: LandingProps) {
   const [activeSignal, setActiveSignal] = useState(SIGNALS_CATALOG[2]); // Default to flagged warning for drama
   const [activeJourneyIdx, setActiveJourneyIdx] = useState(0);
   const [heroScores, setHeroScores] = useState({ structuring: 78, empathy: 84, prioritization: 61 });
+  const [syllabusTrack, setSyllabusTrack] = useState<'core_pm' | 'ai_pm'>('core_pm');
+  const [selectedQuestionTypeId, setSelectedQuestionTypeId] = useState<string>('product_sense');
 
   // Gentle subtle pulse in hero telemetry
   useEffect(() => {
@@ -187,6 +196,12 @@ export function Landing({ onStart }: LandingProps) {
               className="hidden sm:inline-block text-xs font-mono text-zinc-400 hover:text-white transition-colors cursor-pointer"
             >
               How it works
+            </button>
+            <button
+              onClick={() => scrollToSection('frameworks-syllabus')}
+              className="hidden md:inline-block text-xs font-mono text-teal-300 hover:text-white transition-colors cursor-pointer"
+            >
+              Syllabus & Frameworks
             </button>
             <button
               onClick={() => scrollToSection('practice-loop')}
@@ -553,6 +568,340 @@ export function Landing({ onStart }: LandingProps) {
               </div>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ────────────────────────────────────────────────────────
+          3.5 SCROLL SECTION: INTERVIEW SYLLABUS & FRAMEWORKS
+          Core PM & AI PM Question Types, Frameworks & Evaluator POVs
+          Supports JD-based, Company-based, and General preparation
+      ──────────────────────────────────────────────────────── */}
+      <section
+        id="frameworks-syllabus"
+        className="py-28 px-6 border-t border-white/[0.08] bg-[#070707] relative overflow-hidden"
+      >
+        {/* Glow ambient decoration */}
+        <div className="absolute top-1/4 -right-48 w-96 h-96 bg-teal-500/5 rounded-full blur-[140px] pointer-events-none" />
+        <div className="absolute bottom-10 -left-48 w-96 h-96 bg-cyan-500/5 rounded-full blur-[140px] pointer-events-none" />
+
+        <div className="mx-auto max-w-7xl">
+          {/* Section Heading */}
+          <div className="text-left mb-14">
+            <div className="section-label mb-3">
+              <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
+              INTERVIEW CURRICULUM & METHODOLOGIES
+            </div>
+            <h2 className="font-serif text-3xl sm:text-5xl font-normal tracking-tight text-[#F5F5F2] leading-tight">
+              Master Every Question Type & Framework.
+            </h2>
+            <p className="mt-3 text-base text-[#8A8F98] max-w-3xl leading-relaxed">
+              From foundational Core PM product sense to cutting-edge AI architecture, evals, and ethics. Calibrated against Tier-1 interview loops at Google, Meta, Stripe, OpenAI, and Anthropic.
+            </p>
+
+            {/* 3 Preparation Modes Pill Bar */}
+            <div className="mt-8 grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0E0E0E]/80 p-5 flex items-start gap-4">
+                <div className="h-10 w-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-300 shrink-0">
+                  <FileText className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-teal-400 font-bold uppercase tracking-wider">MODE 01</span>
+                    <span className="text-xs font-semibold text-white">JD-Based Synthesis</span>
+                  </div>
+                  <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
+                    Paste any job description to extract target company pain points, required competencies, and calibrated case questions.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0E0E0E]/80 p-5 flex items-start gap-4">
+                <div className="h-10 w-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-300 shrink-0">
+                  <Building2 className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-teal-400 font-bold uppercase tracking-wider">MODE 02</span>
+                    <span className="text-xs font-semibold text-white">Position & Company Tailored</span>
+                  </div>
+                  <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
+                    Tailored for APM, Senior PM, Staff PM, or AI PM roles. Configured with actual product ecosystems and business models.
+                  </p>
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-white/[0.08] bg-[#0E0E0E]/80 p-5 flex items-start gap-4">
+                <div className="h-10 w-10 rounded-xl bg-teal-500/10 border border-teal-500/20 flex items-center justify-center text-teal-300 shrink-0">
+                  <Brain className="h-5 w-5" />
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="font-mono text-[10px] text-teal-400 font-bold uppercase tracking-wider">MODE 03</span>
+                    <span className="text-xs font-semibold text-white">General Framework Mastery</span>
+                  </div>
+                  <p className="mt-1 text-xs text-zinc-400 leading-relaxed">
+                    Rapid-fire diagnostic drills across CIRCLES, GAME, RICE, and RAG architectures to build subconscious communication habits.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Track Switcher Tabs */}
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-8 border-b border-white/[0.08] pb-6">
+            <div className="flex items-center gap-3">
+              <button
+                onClick={() => {
+                  setSyllabusTrack('core_pm');
+                  setSelectedQuestionTypeId('product_sense');
+                }}
+                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                  syllabusTrack === 'core_pm'
+                    ? 'bg-teal-500/15 border border-teal-500/40 text-teal-300 shadow-[0_0_20px_rgba(25,211,197,0.15)] font-bold'
+                    : 'bg-[#121212] border border-white/[0.07] text-zinc-400 hover:text-white hover:border-white/[0.15]'
+                }`}
+              >
+                <Compass className="h-4 w-4" />
+                <span>CORE PM INTERVIEW TRACKS (5 MODULES)</span>
+              </button>
+
+              <button
+                onClick={() => {
+                  setSyllabusTrack('ai_pm');
+                  setSelectedQuestionTypeId('ai_product_sense');
+                }}
+                className={`flex items-center gap-2.5 px-5 py-3 rounded-xl font-mono text-xs uppercase tracking-wider transition-all cursor-pointer ${
+                  syllabusTrack === 'ai_pm'
+                    ? 'bg-teal-500/15 border border-teal-500/40 text-teal-300 shadow-[0_0_20px_rgba(25,211,197,0.15)] font-bold'
+                    : 'bg-[#121212] border border-white/[0.07] text-zinc-400 hover:text-white hover:border-white/[0.15]'
+                }`}
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>AI PM INTERVIEW TRACKS (4 MODULES)</span>
+              </button>
+            </div>
+
+            <div className="text-xs text-zinc-400 font-mono">
+              Showing {syllabusTrack === 'core_pm' ? '5 Classic & Strategic Disciplines' : '4 Advanced GenAI Disciplines'}
+            </div>
+          </div>
+
+          {/* Interactive Curriculum Layout */}
+          {(() => {
+            const filteredQuestions = QUESTION_TYPES_CATALOG.filter(
+              (q) => q.track === syllabusTrack
+            );
+            const activeQuestion =
+              filteredQuestions.find((q) => q.id === selectedQuestionTypeId) ||
+              filteredQuestions[0];
+
+            return (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                {/* Left Side: Question Types List */}
+                <div className="lg:col-span-5 space-y-3">
+                  {filteredQuestions.map((qt, idx) => {
+                    const isSelected = qt.id === activeQuestion.id;
+                    return (
+                      <div
+                        key={qt.id}
+                        onClick={() => setSelectedQuestionTypeId(qt.id)}
+                        className={`p-4 rounded-2xl border transition-all text-left cursor-pointer group ${
+                          isSelected
+                            ? 'bg-[#111616] border-teal-500/40 shadow-[0_0_25px_rgba(25,211,197,0.08)]'
+                            : 'bg-[#0B0B0B] border-white/[0.06] hover:bg-[#101010] hover:border-white/[0.12]'
+                        }`}
+                      >
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center gap-3">
+                            <span
+                              className={`font-mono text-xs font-bold px-2 py-0.5 rounded ${
+                                isSelected
+                                  ? 'bg-teal-500/20 text-teal-300'
+                                  : 'bg-white/[0.05] text-zinc-400 group-hover:text-zinc-200'
+                              }`}
+                            >
+                              0{idx + 1}
+                            </span>
+                            <h3
+                              className={`text-sm font-semibold transition-colors ${
+                                isSelected ? 'text-teal-200' : 'text-zinc-200 group-hover:text-white'
+                              }`}
+                            >
+                              {qt.title}
+                            </h3>
+                          </div>
+                          <ChevronRight
+                            className={`h-4 w-4 transition-transform ${
+                              isSelected
+                                ? 'text-teal-400 translate-x-1'
+                                : 'text-zinc-600 group-hover:text-zinc-400'
+                            }`}
+                          />
+                        </div>
+
+                        <p className="mt-2 text-xs text-zinc-400 line-clamp-2 leading-relaxed">
+                          {qt.subtitle}
+                        </p>
+
+                        <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                          {qt.frameworks.map((fw) => (
+                            <span
+                              key={fw.name}
+                              className={`font-mono text-[10px] px-2 py-0.5 rounded-full border ${
+                                isSelected
+                                  ? 'border-teal-500/30 bg-teal-950/30 text-teal-300'
+                                  : 'border-white/[0.06] bg-white/[0.02] text-zinc-400'
+                              }`}
+                            >
+                              {fw.acronym || fw.name}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* Right Side: Detailed Deep Dive for Selected Question Type */}
+                <div className="lg:col-span-7 bg-[#0B0B0B] border border-white/[0.08] rounded-3xl p-6 sm:p-8 space-y-6 text-left relative overflow-hidden">
+                  <div className="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-white/[0.07]">
+                    <div>
+                      <span className="font-mono text-[10px] text-teal-400 uppercase tracking-widest font-bold block">
+                        MODULE DEEP DIVE · {activeQuestion.track === 'core_pm' ? 'CORE PM' : 'AI PM'}
+                      </span>
+                      <h3 className="font-serif text-2xl font-normal text-white mt-1">
+                        {activeQuestion.title}
+                      </h3>
+                      <p className="text-xs text-zinc-400 mt-1 font-mono">
+                        {activeQuestion.subtitle}
+                      </p>
+                    </div>
+
+                    <button
+                      onClick={onStart}
+                      className="inline-flex items-center gap-2 rounded-xl border border-teal-500/40 bg-teal-950/40 px-3.5 py-2 text-xs font-semibold text-teal-300 hover:bg-teal-900/50 hover:border-teal-400 transition-all cursor-pointer shadow-[0_0_15px_rgba(25,211,197,0.15)]"
+                    >
+                      <span>Practice Module</span>
+                      <ArrowRight className="h-3.5 w-3.5" />
+                    </button>
+                  </div>
+
+                  {/* Core Description */}
+                  <div>
+                    <h4 className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-2">
+                      WHAT THIS QUESTION TYPE TESTS
+                    </h4>
+                    <p className="text-sm text-zinc-200 leading-relaxed font-sans">
+                      {activeQuestion.description}
+                    </p>
+                  </div>
+
+                  {/* Frameworks & Methodologies */}
+                  <div>
+                    <h4 className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-3">
+                      EVALUATED FRAMEWORKS & STRUCTURING METHODS
+                    </h4>
+                    <div className="grid grid-cols-1 gap-3">
+                      {activeQuestion.frameworks.map((fw) => (
+                        <div
+                          key={fw.name}
+                          className="rounded-2xl border border-white/[0.07] bg-[#101010] p-4 space-y-2.5"
+                        >
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-teal-200 flex items-center gap-2">
+                              <span className="h-1.5 w-1.5 rounded-full bg-teal-400" />
+                              {fw.name} {fw.acronym && `(${fw.acronym})`}
+                            </span>
+                            <span className="font-mono text-[10px] text-zinc-400">
+                              {fw.steps.length} Steps
+                            </span>
+                          </div>
+                          <p className="text-xs text-zinc-400 leading-relaxed">
+                            {fw.summary}
+                          </p>
+                          <div className="flex flex-wrap gap-1.5 pt-1">
+                            {fw.steps.map((st, sIdx) => (
+                              <span
+                                key={st}
+                                className="font-mono text-[10px] px-2 py-0.5 rounded bg-white/[0.04] text-zinc-300 border border-white/[0.05]"
+                              >
+                                {sIdx + 1}. {st}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sample Real-World Questions */}
+                  <div>
+                    <h4 className="font-mono text-[11px] text-zinc-400 uppercase tracking-wider mb-2.5">
+                      REAL INTERVIEW CASE PROMPTS
+                    </h4>
+                    <div className="space-y-2">
+                      {activeQuestion.sampleQuestions.map((sq) => (
+                        <div
+                          key={sq}
+                          className="flex items-start gap-2.5 text-xs text-zinc-300 bg-[#121212] border border-white/[0.05] rounded-xl p-3"
+                        >
+                          <span className="text-teal-400 font-bold">Q:</span>
+                          <span className="leading-relaxed italic">"{sq}"</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Evaluator POV vs Common Red Flags */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                    {/* Evaluator POV */}
+                    <div className="rounded-2xl border border-teal-500/25 bg-[#091515] p-4 space-y-2.5">
+                      <div className="flex items-center gap-2 text-teal-300 font-mono text-[11px] font-bold uppercase tracking-wider">
+                        <CheckCircle2 className="h-4 w-4" />
+                        <span>INTERVIEWER POV (LOOK FOR)</span>
+                      </div>
+                      <p className="text-xs text-zinc-300 leading-relaxed italic">
+                        "{activeQuestion.interviewerPOV}"
+                      </p>
+                      <ul className="space-y-1.5 pt-1">
+                        {activeQuestion.evaluationSignals.map((sig) => (
+                          <li
+                            key={sig}
+                            className="text-xs text-zinc-300 flex items-start gap-2"
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-teal-400 mt-1.5 shrink-0" />
+                            <span>{sig}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+
+                    {/* Red Flags */}
+                    <div className="rounded-2xl border border-amber-500/25 bg-[#17120A] p-4 space-y-2.5">
+                      <div className="flex items-center gap-2 text-amber-300 font-mono text-[11px] font-bold uppercase tracking-wider">
+                        <AlertTriangle className="h-4 w-4" />
+                        <span>COMMON RED FLAGS (AVOID)</span>
+                      </div>
+                      <p className="text-xs text-zinc-400 leading-relaxed font-mono text-[11px]">
+                        Instant point deductions observed in candidate responses:
+                      </p>
+                      <ul className="space-y-1.5 pt-1">
+                        {activeQuestion.redFlags.map((flag) => (
+                          <li
+                            key={flag}
+                            className="text-xs text-amber-200/90 flex items-start gap-2"
+                          >
+                            <span className="h-1.5 w-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                            <span>{flag}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            );
+          })()}
         </div>
       </section>
 

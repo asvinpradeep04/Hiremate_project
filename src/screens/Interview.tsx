@@ -24,7 +24,7 @@ import { AudioWaveform } from '@/components/AudioWaveform';
 import { InterviewerAvatar } from '@/components/InterviewerAvatar';
 import { TranscriptDrawer } from '@/components/TranscriptDrawer';
 import { useAudioRecorder } from '@/hooks/useAudioRecorder';
-import { COMPETENCIES } from '@/data/rubric';
+import { COMPETENCIES, getCompetency } from '@/data/rubric';
 import type {
   Attempt,
   AttemptNumber,
@@ -238,8 +238,12 @@ export function Interview({
     };
   }, [attemptNumber, casePrompt.prompt, setup.domain, setup.experienceLevel]);
 
-  // Current active competency
-  const currentCompetency = COMPETENCIES[currentCompetencyIndex] || COMPETENCIES[0];
+  // Current active competencies (preserves original structure while adapting to Core or AI PM)
+  const activeCompetencies = (casePrompt.competencies && casePrompt.competencies.length > 0)
+    ? casePrompt.competencies.map(id => getCompetency(id)).filter(Boolean)
+    : COMPETENCIES.slice(0, 4);
+
+  const currentCompetency = activeCompetencies[currentCompetencyIndex] || activeCompetencies[0];
 
   const formatTimer = (seconds: number) => {
     const m = Math.floor(seconds / 60);
@@ -497,7 +501,7 @@ export function Interview({
         aria-label="Interview Competency Progress"
       >
         <div className="mx-auto flex max-w-4xl items-center justify-between sm:justify-center gap-3 sm:gap-8 overflow-x-auto no-scrollbar">
-          {COMPETENCIES.map((comp, idx) => {
+          {activeCompetencies.map((comp, idx) => {
             const isCompleted = idx < currentCompetencyIndex;
             const isCurrent = idx === currentCompetencyIndex;
             return (

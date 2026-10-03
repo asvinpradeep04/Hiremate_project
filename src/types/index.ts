@@ -2,13 +2,41 @@
 
 export type Rating = 1 | 2 | 3 | 4;
 
-export type CompetencyId =
+export type CoreCompetencyId =
   | 'problem_framing'
   | 'user_understanding'
   | 'prioritization_tradeoffs'
-  | 'metrics_measurement';
+  | 'metrics_measurement'
+  | 'product_strategy'
+  | 'guesstimates'
+  | 'execution_prioritization';
 
-export type Domain = 'fintech' | 'marketplace' | 'saas' | 'consumer' | 'general';
+export type AICompetencyId =
+  | 'ai_product_sense'
+  | 'technical_architecture'
+  | 'evaluation_systems'
+  | 'ai_behavioral_ethics';
+
+export type CompetencyId = CoreCompetencyId | AICompetencyId;
+
+export type InterviewTrack = 'core_pm' | 'ai_pm' | 'blended';
+
+export type CoreQuestionType =
+  | 'product_sense'
+  | 'analytical_metrics'
+  | 'product_strategy'
+  | 'guesstimates'
+  | 'execution_prioritization';
+
+export type AIQuestionType =
+  | 'ai_product_sense'
+  | 'technical_architecture'
+  | 'evaluation_systems'
+  | 'ai_behavioral_ethics';
+
+export type QuestionType = CoreQuestionType | AIQuestionType | 'all';
+
+export type Domain = 'fintech' | 'marketplace' | 'saas' | 'consumer' | 'general' | 'ai_tech';
 
 export type ExperienceLevel = '0-1' | '1-2' | '2-3' | '3+';
 
@@ -46,6 +74,33 @@ export interface SetupData {
   companyName?: string;
   companyServices?: string;
   jobDescription?: string;
+  track?: InterviewTrack;
+  questionType?: QuestionType;
+  targetFrameworks?: string[];
+}
+
+// ─── Framework Reference ───
+
+export interface FrameworkItem {
+  name: string;
+  acronym?: string;
+  summary: string;
+  steps: string[];
+}
+
+export interface QuestionTypeDefinition {
+  id: QuestionType;
+  track: 'core_pm' | 'ai_pm';
+  title: string;
+  shortTitle: string;
+  subtitle: string;
+  description: string;
+  competencyId: CompetencyId;
+  frameworks: FrameworkItem[];
+  sampleQuestions: string[];
+  interviewerPOV: string;
+  evaluationSignals: string[];
+  redFlags: string[];
 }
 
 // ─── Case ───
@@ -57,6 +112,8 @@ export interface CasePrompt {
   domain: Domain;
   difficulty: string;
   competencies: CompetencyId[];
+  track?: InterviewTrack;
+  questionType?: QuestionType;
 }
 
 // ─── Competency & Rubric ───

@@ -3,12 +3,21 @@ import { config } from './config';
 import * as db from './db';
 import * as ai from './ai';
 
-const COMPETENCY_KEYS = [
+const DEFAULT_CORE_KEYS = [
   'problem_framing',
   'user_understanding',
   'prioritization_tradeoffs',
   'metrics_measurement',
 ];
+
+const DEFAULT_AI_KEYS = [
+  'ai_product_sense',
+  'technical_architecture',
+  'evaluation_systems',
+  'ai_behavioral_ethics',
+];
+
+const COMPETENCY_KEYS = DEFAULT_CORE_KEYS;
 
 const COMPETENCY_PROMPTS: Record<string, string> = {
   problem_framing:
@@ -19,13 +28,27 @@ const COMPETENCY_PROMPTS: Record<string, string> = {
     'What approach would you take, and what alternatives did you consider? Walk me through your prioritization and the trade-offs involved.',
   metrics_measurement:
     'How would you measure success for this initiative? What metrics would tell you whether it is actually working?',
+  product_strategy:
+    'Now from a strategic lens: how does this initiative build durable competitive moats (switching costs, network effects) against competitors, and how does it fit into your 3-horizon bets?',
+  guesstimates:
+    'Let’s look at the numbers: what is your formula and structured Fermi breakdown to estimate the market size or capacity here? Walk me through your calculations.',
+  execution_prioritization:
+    'From an execution perspective: if bandwidth is constrained and you encounter launch blockers or regressions, how do you apply RICE scoring and what are your go/no-go rollback thresholds?',
+  ai_product_sense:
+    'To begin our AI product evaluation: how would you design the probabilistic UX, confidence-tier routing, and human-in-the-loop safeguards to handle model hallucinations and maintain user trust?',
+  technical_architecture:
+    'Let’s go deeper into the technical architecture: walk me through your technical design choices between RAG vs Fine-tuning, chunking strategy, latency budgets (TTFT), and token costs.',
+  evaluation_systems:
+    'How would you design a comprehensive evaluation system (multi-tier eval pyramid, LLM-as-a-judge, golden benchmark sets, and RAG Triad) to detect hallucinations and prevent prompt regressions?',
+  ai_behavioral_ethics:
+    'Finally, how do you address Responsible AI governance: auditing algorithmic bias across cohorts, preventing PII/data leakage, mitigating sycophancy, and handling safety incidents?',
 };
 
 const COMPETENCY_TRANSITIONS = [
-  "Good. Now let's shift to understanding the user more specifically.",
-  "Let's move on to how you would prioritize and think about trade-offs.",
-  'Finally, how would you measure whether your proposed approach is working?',
-  'That covers all the areas I wanted to explore. Let me compile the evaluation.',
+  "Good. Now let's explore the user persona and acute workflow friction more specifically.",
+  "Let's move on to how you would prioritize options, analyze architecture, and think through trade-offs.",
+  "Now let's examine measurement, evaluation systems, and defensive guardrail metrics.",
+  "That covers all the primary competency areas I wanted to explore. Let me compile the debrief evaluation.",
 ];
 
 // In-memory case bank (synced with frontend cases)
@@ -245,9 +268,11 @@ export async function handleApiRoute(
       }
 
       let caseData = getCase(domain, attemptNumber);
+      const isAITrack = body.track === 'ai_pm' || (body.targetRole && (body.targetRole.includes('AI') || body.targetRole.includes('ML')));
+      const activeCompetencies = isAITrack ? DEFAULT_AI_KEYS : DEFAULT_CORE_KEYS;
 
-      // If company details or JD provided, generate tailored custom case
-      if (body.companyName || body.jobDescription || body.interviewMode === 'company_tailored') {
+      // If company details, JD, or custom track provided, generate tailored custom case
+      if (body.companyName || body.jobDescription || body.interviewMode === 'company_tailored' || body.track || body.questionType) {
         try {
           const custom = await ai.generateCustomCasePrompt({
             targetRole: body.targetRole,
@@ -256,6 +281,9 @@ export async function handleApiRoute(
             jobDescription: body.jobDescription,
             domain,
             experienceLevel,
+            track: body.track,
+            questionType: body.questionType,
+            targetFrameworks: body.targetFrameworks,
           });
           caseData = {
             id: custom.id,
@@ -263,7 +291,7 @@ export async function handleApiRoute(
             prompt: custom.prompt,
             domain: (custom.domain as any) || domain,
             difficulty: 'Early-career to Mid',
-            competencies: COMPETENCY_KEYS,
+            competencies: custom.competencies || activeCompetencies,
           };
         } catch (e) {
           console.warn('Could not generate custom prompt, using default case:', e);
@@ -286,15 +314,20 @@ export async function handleApiRoute(
         caseId: caseData.id,
         targetRole: body.targetRole,
         companyName: body.companyName,
+        track: body.track,
+        questionType: body.questionType,
       });
 
+      const firstComp = (caseData.competencies && caseData.competencies[0]) || activeCompetencies[0];
+      const promptSuffix = COMPETENCY_PROMPTS[firstComp] || COMPETENCY_PROMPTS.problem_framing;
+
       // Add initial interviewer greeting / prompt to transcript
-      const initialPrompt = `${caseData.prompt}\n\n${COMPETENCY_PROMPTS.problem_framing}`;
+      const initialPrompt = `${caseData.prompt}\n\n${promptSuffix}`;
       const transcript = db.addTranscript({
         attemptId: attempt.id,
         speaker: 'interviewer',
         text: initialPrompt,
-        competencyId: 'problem_framing',
+        competencyId: firstComp,
       });
 
       sendJson(res, {
@@ -354,7 +387,8 @@ export async function handleApiRoute(
       const body = await parseJsonBody(req);
       const responseText = (body.responseText || body.text || '').trim();
       const currentCompIndex = attempt.current_competency_index;
-      const competencyId = body.competencyId || COMPETENCY_KEYS[currentCompIndex] || 'problem_framing';
+      const attemptKeys = attempt.case_id?.includes('ai') || attempt.domain === 'ai_tech' ? DEFAULT_AI_KEYS : DEFAULT_CORE_KEYS;
+      const competencyId = body.competencyId || attemptKeys[currentCompIndex] || attemptKeys[0];
 
       if (!responseText) {
         sendJson(res, { error: 'Empty response text' }, 400);
@@ -446,8 +480,7 @@ export async function handleApiRoute(
         return true;
       }
 
-      // Step 4: Advance: Move to next competency or Complete
-      const isLastCompetency = currentCompIndex >= COMPETENCY_KEYS.length - 1;
+      const isLastCompetency = currentCompIndex >= attemptKeys.length - 1;
 
       if (isLastCompetency) {
         // Interview complete!
@@ -479,9 +512,9 @@ export async function handleApiRoute(
 
       // Advance to next competency
       const nextIndex = currentCompIndex + 1;
-      const nextCompetency = COMPETENCY_KEYS[nextIndex];
-      const transitionText = COMPETENCY_TRANSITIONS[currentCompIndex];
-      const promptText = COMPETENCY_PROMPTS[nextCompetency];
+      const nextCompetency = attemptKeys[nextIndex];
+      const transitionText = COMPETENCY_TRANSITIONS[Math.min(currentCompIndex, COMPETENCY_TRANSITIONS.length - 2)];
+      const promptText = COMPETENCY_PROMPTS[nextCompetency] || COMPETENCY_PROMPTS.problem_framing;
       const fullNextMessage = `${transitionText} ${promptText}`;
 
       const advanceTranscript = db.addTranscript({
